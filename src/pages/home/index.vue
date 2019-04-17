@@ -3,11 +3,17 @@
 </template>
 
 <script>
+import {test} from 'utils';
+
 export default {
   name: 'app',
+  async created(){
+		console.log('dsds')
+		console.log(await test())
+  },
   data() {
     return {
-      message: 'Hello, Vue!'
+      message: 'Hello, V!'
     };
   }
 };

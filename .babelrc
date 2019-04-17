@@ -1,8 +1,13 @@
 { 
   "plugins": [
-    ["@babel/plugin-proposal-class-properties", { "loose": true }]
+    ["@babel/plugin-proposal-class-properties", { "loose": true }],
+    "@babel/plugin-transform-runtime",
+    "@babel/plugin-transform-async-to-generator"
   ],
   "presets": [
-    ["@babel/preset-env"]
+	  
+    ["@babel/preset-env", {
+      "useBuiltIns": false,
+    }]
   ]
 }
