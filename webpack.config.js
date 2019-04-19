@@ -7,11 +7,7 @@ const ExtractTextPlugin = require("extract-text-webpack-plugin");
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const webpack = require('webpack');
 const srcPath = path.resolve(__dirname, './src');
-// const filePath = path.join(__dirname, 'src')
-// fs.readdir(filePath,function(err,data){
-//   console.log(data)
-// })
-
+const autoprefixer = require('autoprefixer');
 function getEntries (cwd) {
   
   
@@ -47,13 +43,9 @@ function getHtml(entry){
 }
 const entry = getEntries(srcPath);
 
-
-
-
-//了解splitChunk
 var config = {
   devServer: {
-    contentBase: path.join(__dirname, 'dist'),
+    contentBase: path.join(__dirname, 'dist/pages'),
     compress: true,
     port: 9000
   },
@@ -69,7 +61,15 @@ var config = {
       {
         test:/\.css$/,
         use: ExtractTextPlugin.extract({
-          use:'css-loader',
+          use:['css-loader',
+          {
+            loader:"postcss-loader",
+            options: {
+                plugins: (loader) => [
+                    autoprefixer(), 
+                ]
+            }
+          },'sass-loader'],
           fallback:'style-loader'
         })
       },
