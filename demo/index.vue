@@ -2,17 +2,17 @@
   <div>
     
     <h1>{{message}}</h1>
-    <Comp/>
+    <Button/>
   </div>
 </template>
 
 <script>
 
-import Comp from '@hy/components';
+import {Button} from '@hy/components';
 export default {
   name: 'app',
   components:{
-    Comp
+    Button
   },
   data() {
     return {

@@ -11,7 +11,7 @@ var config = {
     contentBase: path.resolve(__dirname, 'demo'),
     compress: true
   },
-  entry:{index:'./src/index.vue'},
+  entry:{index:'./src/index.js'},
   output: {
     path: path.resolve(__dirname, 'lib'),
     filename: '[name].js',
@@ -39,14 +39,29 @@ var config = {
       {
         test:/\.js$/,
         exclude:/(node_modules|bower_components)/,
-        use:{
+        use:[{
           loader: 'babel-loader'
-        }
+        },
+        {
+          loader: 'eslint-loader',
+          options: { // 这里的配置项参数将会被传递到 eslint 的 CLIEngine 
+            include: [path.resolve(__dirname, 'src')], // 指定检查的目录
+            enforce: 'pre',
+            formatter: require('./.eslintrc.js') // 指定错误报告的格式规范
+          }
+        }]
       },
       {
         test: /\.vue$/,
         exclude: /node_modules/,
-        loader: 'vue-loader'
+        use: ['vue-loader',{
+          loader: 'eslint-loader',
+          options: { // 这里的配置项参数将会被传递到 eslint 的 CLIEngine 
+            include: [path.resolve(__dirname, 'src')], // 指定检查的目录
+            enforce: 'pre',
+            formatter: require('./.eslintrc.js') // 指定错误报告的格式规范
+          }
+        }]
       },
     ]
   },
@@ -65,9 +80,9 @@ var config = {
    ]
 };
 
-function getConfig(env,demo){
+function getConfig(env,dev){
 
-  if(demo==true){
+  if(dev==true){
     config.entry='./demo/index.js'
     config.output={
       path: path.resolve(__dirname, 'demo'),
@@ -85,10 +100,37 @@ function getConfig(env,demo){
     config.resolve= {
       extensions: [ '.js','.vue'],
       alias: {
-        '@hy/components': path.resolve(__dirname, 'src/index.vue'),
+        '@hy/components': path.resolve(__dirname, 'src'),
       }
     }
-
+    config.module = {
+    rules: [
+      {
+        test:/\.css$/,
+        use: ExtractTextPlugin.extract({
+          use:['css-loader', {
+            loader:"postcss-loader",
+            options: {
+                plugins: (loader) => [
+                    autoprefixer(), 
+                ]
+            }
+          }, 'sass-loader'],
+          fallback:'style-loader'
+        })
+      },
+      {
+        test:/\.js$/,
+        exclude:/(node_modules|bower_components)/,
+        loader: 'babel-loader'        
+      },
+      {
+        test: /\.vue$/,
+        exclude: /node_modules/,
+        loader: 'vue-loader'
+      },
+    ]
+  }
     config.externals={}
   }else{
 
@@ -101,5 +143,5 @@ function getConfig(env,demo){
 
 module.exports=(env,argv)=>{
   
-  return getConfig(env,argv.demo)
+  return getConfig(env,argv.dev)
 }
